@@ -50,13 +50,15 @@ The table below shows this endpoint's support for
     that should be applied to all tokens created in this namespace. The ACLLink
     struct is an object with an "ID" and/or "Name" field to identify a policy.
     When a name is used instead of an ID, Consul will resolve the name to an ID
-    and store that internally.
+    and store that internally. Note that the ACL token used in the API request
+    must have `acl:write` access to the linked policy.
 
   - `RoleDefaults` `(array<ACLLink>)` - This is the list of default roles
     that should be applied to all tokens created in this namespace. The ACLLink
     struct is an object with an "ID" and/or "Name" field to identify a policy.
     When a name is used instead of an ID, Consul will resolve the name to an ID
-    and store that internally.
+    and store that internally. Note that the ACL token used in the API request
+    must have `acl:write` access to the linked role.
 
 - `Meta` `(map<string|string>: <optional>)` - Specifies arbitrary KV metadata
   to associate with the namespace.
@@ -245,13 +247,15 @@ The table below shows this endpoint's support for
     that should be applied to all tokens created in this namespace. The ACLLink
     struct is an object with an "ID" and/or "Name" field to identify a policy.
     When a name is used instead of an ID, Consul will resolve the name to an ID
-    and store that internally.
+    and store that internally. Note that the ACL token used in the API request
+    must have `acl:write` access to the linked policy.
 
   - `RoleDefaults` `(array<ACLLink>)` - This is the list of default roles
     that should be applied to all tokens created in this namespace. The ACLLink
     struct is an object with an "ID" and/or "Name" field to identify a policy.
     When a name is used instead of an ID, Consul will resolve the name to an ID
-    and store that internally.
+    and store that internally. Note that the ACL token used in the API request
+    must have `acl:write` access to the linked role.
 
 - `Meta` `(map<string|string>: <optional>)` - Specifies arbitrary KV metadata
   to associate with the namespace.

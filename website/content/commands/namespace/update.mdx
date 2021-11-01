@@ -29,10 +29,12 @@ with the existing namespace definition.
 #### Command Options
 
 - `-default-policy-id=<value>` - ID of a policy from the default namespace to inject for all tokens
-  in this namespace. May be specified multiple times.
+  in this namespace. May be specified multiple times. Note that the ACL token used with
+  this command must have `acl:write` access to the linked policy.
 
 - `-default-policy-name=<value>` - Name of a policy from the default namespace to inject for all
-  tokens in this namespace. May be specified multiple times.
+  tokens in this namespace. May be specified multiple times. Note that the ACL token used with
+  this command must have `acl:write` access to the linked role.
 
 - `-default-role-id=<value>` - ID of a role from the default namespace to inject for all tokens in
   this namespace. May be specified multiple times.
