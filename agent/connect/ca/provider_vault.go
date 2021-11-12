@@ -185,7 +185,6 @@ func (v *VaultProvider) GenerateRoot() error {
 				DefaultLeaseTTL: v.config.RootCertTTL.String(),
 			},
 		})
-
 		if err != nil {
 			return err
 		}
