@@ -1504,11 +1504,13 @@ func (f *aclFilter) filterServiceDump(services *structs.ServiceDump) {
 }
 
 // filterNodes is used to filter through all parts of a node list and remove
-// elements the provided ACL token cannot access.
-func (f *aclFilter) filterNodes(nodes *structs.Nodes) {
+// elements the provided ACL token cannot access. Returns true if any elements
+// were removed.
+func (f *aclFilter) filterNodes(nodes *structs.Nodes) bool {
 	n := *nodes
 
 	var authzContext acl.AuthorizerContext
+	var removed bool
 
 	for i := 0; i < len(n); i++ {
 		n[i].FillAuthzContext(&authzContext)
@@ -1517,10 +1519,12 @@ func (f *aclFilter) filterNodes(nodes *structs.Nodes) {
 			continue
 		}
 		f.logger.Debug("dropping node from result due to ACLs", "node", structs.NodeNameString(node, n[i].GetEnterpriseMeta()))
+		removed = true
 		n = append(n[:i], n[i+1:]...)
 		i--
 	}
 	*nodes = n
+	return removed
 }
 
 // redactPreparedQueryTokens will redact any tokens unless the client has a
@@ -1829,7 +1833,7 @@ func filterACLWithAuthorizer(logger hclog.Logger, authorizer acl.Authorizer, sub
 		filt.filterServiceDump(&v.Dump)
 
 	case *structs.IndexedNodes:
-		filt.filterNodes(&v.Nodes)
+		v.QueryMeta.ResultsFilteredByACLs = filt.filterNodes(&v.Nodes)
 
 	case *structs.IndexedNodeServices:
 		filt.filterNodeServices(&v.NodeServices)
