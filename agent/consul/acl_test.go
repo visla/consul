@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-uuid"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/mitchellh/copystructure"
@@ -3179,6 +3180,39 @@ func TestACL_filterPreparedQueries(t *testing.T) {
 	if len(queries) != 0 {
 		t.Fatalf("bad: %#v", queries)
 	}
+}
+
+func TestACL_filterServiceList(t *testing.T) {
+	logger := hclog.NewNullLogger()
+
+	makeList := func() *structs.IndexedServiceList {
+		return &structs.IndexedServiceList{
+			Services: structs.ServiceList{
+				{Name: "foo"},
+				{Name: "bar"},
+			},
+		}
+	}
+
+	t.Run("permissive filtering", func(t *testing.T) {
+		require := require.New(t)
+
+		list := makeList()
+		filterACLWithAuthorizer(logger, acl.AllowAll(), list)
+
+		require.False(list.QueryMeta.ResultsFilteredByACLs, "ResultsFilteredByACLs should be false")
+		require.Len(list.Services, 2)
+	})
+
+	t.Run("restrictive filtering", func(t *testing.T) {
+		require := require.New(t)
+
+		list := makeList()
+		filterACLWithAuthorizer(logger, acl.DenyAll(), list)
+
+		require.True(list.QueryMeta.ResultsFilteredByACLs, "ResultsFilteredByACLs should be true")
+		require.Empty(list.Services)
+	})
 }
 
 func TestACL_unhandledFilterType(t *testing.T) {
