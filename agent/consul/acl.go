@@ -1345,9 +1345,10 @@ func (f *aclFilter) filterNodeServiceList(services *structs.NodeServiceList) boo
 }
 
 // filterCheckServiceNodes is used to filter nodes based on ACL rules.
-func (f *aclFilter) filterCheckServiceNodes(nodes *structs.CheckServiceNodes) {
+func (f *aclFilter) filterCheckServiceNodes(nodes *structs.CheckServiceNodes) bool {
 	csn := *nodes
 	var authzContext acl.AuthorizerContext
+	var removed bool
 
 	for i := 0; i < len(csn); i++ {
 		node := csn[i]
@@ -1356,10 +1357,12 @@ func (f *aclFilter) filterCheckServiceNodes(nodes *structs.CheckServiceNodes) {
 			continue
 		}
 		f.logger.Debug("dropping node from result due to ACLs", "node", structs.NodeNameString(node.Node.Node, node.Node.GetEnterpriseMeta()))
+		removed = true
 		csn = append(csn[:i], csn[i+1:]...)
 		i--
 	}
 	*nodes = csn
+	return removed
 }
 
 // filterServiceTopology is used to filter upstreams/downstreams based on ACL rules.
@@ -1909,6 +1912,14 @@ func filterACLWithAuthorizer(logger hclog.Logger, authorizer acl.Authorizer, sub
 
 	case *structs.IndexedGatewayServices:
 		v.QueryMeta.ResultsFilteredByACLs = filt.filterGatewayServices(&v.Services)
+
+	case *structs.IndexedNodesWithGateways:
+		if filt.filterCheckServiceNodes(&v.Nodes) {
+			v.QueryMeta.ResultsFilteredByACLs = true
+		}
+		if filt.filterGatewayServices(&v.Gateways) {
+			v.QueryMeta.ResultsFilteredByACLs = true
+		}
 
 	default:
 		panic(fmt.Errorf("Unhandled type passed to ACL filter: %T %#v", subj, subj))
