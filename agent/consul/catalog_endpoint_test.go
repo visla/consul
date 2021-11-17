@@ -3394,6 +3394,7 @@ service "gateway" {
 		var resp structs.IndexedGatewayServices
 		assert.Nil(r, msgpackrpc.CallWithCodec(codec, "Catalog.GatewayServices", &req, &resp))
 		assert.Len(r, resp.Services, 0)
+		assert.True(r, resp.QueryMeta.ResultsFilteredByACLs, "ResultsFilteredByACLs should be true")
 	})
 
 	rules = `
@@ -3417,6 +3418,7 @@ service "gateway" {
 		var resp structs.IndexedGatewayServices
 		assert.Nil(r, msgpackrpc.CallWithCodec(codec, "Catalog.GatewayServices", &req, &resp))
 		assert.Len(r, resp.Services, 2)
+		assert.True(r, resp.QueryMeta.ResultsFilteredByACLs, "ResultsFilteredByACLs should be true")
 
 		expect := structs.GatewayServices{
 			{
