@@ -26,7 +26,14 @@ var (
 		"TLSv1_2":  TLSv1_2,
 		"TLSv1_3":  TLSv1_3,
 	}
-	TLSVersionStrings = map[TLSVersion]string{
+	TLSVersionEnvoyStrings = map[TLSVersion]string{
+		TLSVersionAuto: "TLS_AUTO",
+		TLSv1_0:        "TLSv1_0",
+		TLSv1_1:        "TLSv1_1",
+		TLSv1_2:        "TLSv1_2",
+		TLSv1_3:        "TLSv1_3",
+	}
+	TLSVersionHumanStrings = map[TLSVersion]string{
 		TLSVersionAuto: "Allow implementation to select TLS version",
 		TLSv1_0:        "TLS 1.0",
 		TLSv1_1:        "TLS 1.1",
